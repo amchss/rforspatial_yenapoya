@@ -1,0 +1,278 @@
+---
+embed-resources: true
+---
+
+# Principles of Spatial Epidemiology
+
+## What is Spatial Epidemiology?
+
+:::{style="text-align:justify"}
+
+Spatial epidemiology is the description and analysis of geographically indexed health data with respect to demographic, environmental, behavioural, socio-economic, genetic, and infectious risk factors.
+
+Some of the definitions of spatial epidemiology are:
+
+***The description of spatial patterns of disease incidence and mortality***[^chapter_9_intro_spatial_epi-1]
+
+[^chapter_9_intro_spatial_epi-1]: English D. 1992
+
+***Spatial Epidemiology concerns the analysis of the spatial/geographical distribution of the incidence of disease***[^chapter_9_intro_spatial_epi-2]
+
+[^chapter_9_intro_spatial_epi-2]: Lawson, AB. 2003
+
+Health phenomena often involve spatial relationships among individuals and risk factors.
+
+:::
+
+## GIS in spatial epidemiology and public health
+
+:::{style="text-align:justify"}
+
+This section provides an introduction to geographic information systems (GIS) in R. The field of GIS in healthcare has become extremely useful in providing a fresh outlook to public health. GIS provides an opportunity to enable overlaying data with its spatial representation to support better planning and decision-making in healthcare. The convergence of many new sub-disciplines such as medical geography, public health, health informatics and data science help us better understand the similarities and differences in population health across the world. Some of the applications of GIS in healthcare include disease surveillance, environmental health, infectious diseases such as mathematical modelling and agent based modelling, and even medical imagining. While traditional uses of GIS in healthcare still are relevant, newer methods and advancing technology would be monumental for public health research.
+
+It is now being realized that the healthcare industry can benefit tremendously from the potential of GIS. Innovative ways are being developed to harness the power of GIS through data integration pipelines and spatial visualization. Both the public and private sectors are adopting GIS to provide value addition across different sectors of healthcare - from public health departments and public health policy and research organizations to hospitals, medical centres, and health insurance organizations. With this background, let us dive right in!
+
+It must be evident by now that geographic information systems (GIS) try to answer the question of WHERE:
+
+-   Where diseases are prevalent?
+-   Where do vulnerable populations live?
+-   Where are we supposed to undertake public health correction measures?
+-   Where are resources most needed for improving health conditions?
+
+GIS enabled systems has the potential to offer crucial insights into such questions? However, it is also important that the right questions as being asked. In order to understand better on how to ask the right questions, we may have to revisit the history of GIS in Public Health.
+
+Early examples using maps as tools to better understand disease and death have been applications such as medical mapping and disease topography. From early 17th Century, maps have not simply been used to illustrate a situation but also to prove an argument. Pioneering works in this regard have helped disprove the Theory of Miasma and identified that water as the cause of disease rather than air. Soon by the 18th Century medical maps saw many applications in public health such as plague, yellow fever, and cholera.
+
+![Map of the plague in the province of Bari, Naples, 1690-1692, by Filippo Arrieta. The map shows areas most affected and the boundaries of a military quarantine imposed to prevent its spread to neighboring towns and to other provinces.Source: Koch T. Mapping the miasma: air, health, and place in early medical mapping. Cartographic Perspectives. 2005 Sep 1(52):4-27.](images_spatial/history_gis_plague_naples.jpg){fig-align="center"}
+
+In 1854, an English physician, John Snow, provided the classic example of how GIS mapping can be used in epidemiological research. He identified the water source responsible for an outbreak of cholera in London by mapping the locations of those afflicted.
+
+![John Snow's map, published in his On The Mode Of Communication Of Cholera, of the 1854 cholera outbreak in London is one of the best known examples of data visualization and information design.](images_spatial/johnsnow_map.jpg){fig-align="center"}
+
+By plotting the number and location of fatalities using stacks of bars on a map, Snow was able to perform a task that is now easily taken for granted: he visualized a spatial distribution. Looking at the results, the pattern on the map seems unmistakable. The map appears to support Snow's claims that cholera is a waterborne disease and that the pump on Broad Street is the source of the outbreak.
+
+![The Pump Neighborhood](images_spatial/johnsnow_map2.jpg){fig-align="center"}
+
+Despite its hand-drawn, back-of-the-envelope appearance, Snow writes:
+
+*"The inner dotted line on the map shows the various points which have been found by careful measurement to be at an equal distance by the nearest road from the pump in Broad Street and the surrounding pumps ..."*
+
+With these words let us recreate John Snows famous map of Cholera in R.
+
+But first, some best practices:
+
+:::
+
+## Cartographic Guidelines for Public Health
+
+:::{style="text-align:justify"}
+
+Geography and Geospatial Science Working Group (GeoSWG) has recognised the need for best practices in cartography. With this purpose Centre for Disease Control (CDC, Atlanta) has come up with the Cartographic Guidelines for Public Health. Adhering to these guidelines, help the researchers develop high-quality, consistent map products to promote the mission of public health.
+
+Some of the important aspects of these guidelines are:
+
+-   Map Elements
+    -   Title and Borders
+    -   North Arrow / Graticule / Scale
+    -   Inset Maps
+    -   Labels and Legend
+-   Other Elements
+    -   Data Sources
+    -   Dates
+    -   Information about Data Processing
+    -   Projection
+
+![A illustration of the various map elements arranged according to the Cartographic Guidelines by the CDC](images_spatial/map_elements_1.jpg){fig-align="center"}
+
+:::
+
+### Map Projection
+
+:::{style="text-align:justify"}
+
+Projections transform the curved, three-dimensional surface of the earth into a flat, two-dimensional plane. All map projections have distortions (distance, area, direction, and/or shape). The choice of projection depends on the intended use of the map. An equal-area map projection is a good selection for portraying geographic data distributions and is suitable for most other maps. However, if the map is attempting to show distance from patients to providers, for example, then an equidistant projection is appropriate because it preserves distance.
+
+![The three families of map projections. They can be represented by: a) cylindrical projections, b) conical projections or c) planar projections.](images_spatial/projection_families.png){fig-align="center"}
+
+We sometimes refer to coordinate systems (or grid systems) and datums in context with map projections. With the help of coordinate reference systems (CRS) every place on the earth can be specified by a set of three numbers, called coordinates. Various coordinate systems and datums are used throughout the world. Most mapping starts with a projected map and a coordinate system overlay, which enables locational referencing. Datums, based upon different ellipsoids (idealized versions of the shape of the earth), define the origin and orientation of latitude and longitude lines. The most recently developed and widely used datum is WGS 1984. Global positioning system (GPS) data are often collected in the WGS 1984 datum.
+
+![Different Examples of projection systems](images_spatial/different_projections.jpg){fig-align="center"}
+
+It is important to note that this CRS represented in can be represented in many ways. For example:
+
+`PROJ.4` format as `+proj=longlat +datum=WGS84 +no_defs +type=crs`, and in Well Known Text (WKT) format as
+
+> GEOGCS\["WGS 84", DATUM\["WGS_1984", SPHEROID\["WGS 84",6378137,298.257223563\]\], PRIMEM\["Greenwich",0\], UNIT\["degree",0.0174532925199433, AUTHORITY\["EPSG","9122"\]\], AUTHORITY\["EPSG","4326"\]\]
+
+:::
+
+## Spatial Files and Extensions
+
+:::{style="text-align:justify"}
+
+There are over 60 different file formats in GIS. They can be broadly classified into vector file formats and raster file formats.
+
+Vector graphics are comprised of vertices and paths. The three basic symbol types in vector data are points, lines and polygons. Among vector data, the commonly used file formats are the ESRI Shape file extensions (`.shp`, `.dbf`, `.shx`), Geographic JavaScript Object Notation (`.geojson`, `.json`) and Google Keyhole Markup Language (`.kml`, `.kmz`). Please note that all files of the ESRI Shapefiles are necessary for the file to work properly.
+
+On the contrary, raster data is made up of pixels, also referred to as grid cells). They are usually square but can also be hexagons or other shapes. Rasters have pixels that are associated with a value (continuous) or class (discrete). One of the most widely used raster formats are the GeoTiff extensions (`.tif`, `.tiff`).
+
+With this background, we can now begin to recreate John Snow's map.
+
+:::
+
+## Introducing the `sf` package
+
+:::{style="text-align:justify"}
+
+![](images_spatial/sf_hex_sticker.jpg){fig-align="center" width="129"}
+
+There are several packages that are available on CRAN that can perform spatial analytical tasks and operations. However, not all of them are having continued support from the original authors and are turning obsolete.
+
+The figure below shows the different spatial packages on CRAN and their popularity, its is clear that the `sf` package has surpassed all other packages in terms of popularity and user downloads.
+
+![Downloads of selected R packages for working with geographic data from early 2013 to present. The y axis shows the average number of dailly downloads from the popular cloud.r-project.org CRAN mirror with a 3-month rolling window (log scale)](images_spatial/spatial_packages_cran.png){fig-align="center" width="300"}
+
+The `sf` package provides simple features access for R. Simple Features is a set of standards that specify a common storage and access model of geographic feature made of mostly two-dimensional geometries (point, line, polygon, multi-point, multi-line, etc.) used by geographic information systems. It is formalized by both the Open Geospatial Consortium (OGC) and the International Organization for Standardization (ISO).
+
+![](images_spatial/sf_package_1.jpg){fig-align="center" width="400"}
+
+:::
+
+### What is a feature?
+
+:::{style="text-align:justify"}
+
+![](images_spatial/sf-classes.png){fig-align="center" width="300"}
+
+A feature is thought of as a thing, or an object in the real world, such as a building or a tree. As is the case with objects, they often consist of other objects. A set of features can form a single feature. A tree in a forest can be a feature, a forest can be a feature, a city can be a feature. An image pixel from a satellite can be a feature, or a complete MRI scan image can be a feature too.
+
+:::
+
+### The common seven simple feature types
+
+![Common types of geometry in \`sf\` package](images_spatial/sf_geometry_types.jpg){fig-align="center" width="582"}
+
+## The Data
+
+:::{style="text-align:justify"}
+
+Today we shall be working with one of the in built datasets in R. There are other ways to import the different spatial files in R with the `sf` package. You can look into the documentation of the `sf` package for additional help (<https://r-spatial.github.io/sf/>). The datasets from the cholera outbreak in 1854 are available from the `HistData` package. The data sets used in this chapter are:
+
+-   `Snow.deaths`
+-   `Snow.streets`
+-   `Snow.pumps`
+
+The datasets are available as `dataframe` objects. We need to manipulate them into `sf` objects as it is the best practice (and also very intuitive and easy to work with). Let us look at the `head` of dataset `Snow.deaths` to understand its structure.
+
+```{r}
+#| warning: false
+
+library(tidyverse) 
+
+HistData::Snow.deaths %>% head()
+```
+
+We can now manipulate the spatial file into an `sf` object.
+
+```{r}
+#| warning: false
+
+library(tidyverse)
+library(sf)
+
+snow_deaths <- HistData::Snow.deaths %>%
+  as_tibble() %>% 
+  st_as_sf(., coords = c('x', 'y'), crs = 4326)
+```
+
+The above code takes the dataset Snow.deaths from the HistData package and converts it into an `sf` object with additional arguments `coords` (which specifies the column representing the latitude and longitude respectively) and `crs` which takes the European Petroleum Survey Group (EPSG) code for the coordinate reference system (<https://epsg.io>). We are also creating it as a new object names `snow_pumps` for future reference.
+
+We can check the class of the newly created object.
+
+```{r}
+snow_deaths %>% class()
+```
+
+Lets print the object in the console and have a look.
+
+```{r}
+snow_deaths
+```
+
+Congratulations! You've just created your first `sf` object.
+
+Now, lets plot the `sf` object using the `ggplot2`'s `geom_sf` wrapper.
+
+```{r}
+
+
+snow_deaths %>% 
+  ggplot() +
+  geom_sf() 
+
+```
+
+Now, Lets load and look at the streets of Soho, London. However, the streets are represented as points which might be tricky to manipulate. However, thanks to the mighty `sf` package, we can perform this task in an elegant way.
+
+```{r}
+#| echo: true
+
+snow_streets <- HistData::Snow.streets %>% 
+  st_as_sf(., coords = c('x', 'y'), crs = 4326) %>% 
+  group_by(street) %>% 
+  summarize(n = mean(n)) %>% 
+  st_cast('LINESTRING')
+
+snow_streets %>% 
+  ggplot() + 
+  geom_sf()
+```
+
+Now lets overlay the cholera deaths over the streets. We can optionally color the deaths in red and set transparency at 20% for better visualisation.
+
+```{r}
+#| echo: true
+
+
+ggplot() +
+  geom_sf(data = snow_streets) +
+  geom_sf(data = snow_deaths, color = 'red', alpha = 0.2, size = 3)
+```
+
+Lets add the pumps now... Add nifty little labels using the function `geom_sf_label`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+
+snow_pumps <- HistData::Snow.pumps %>% 
+  st_as_sf(., coords = c('x', 'y'), crs = 4326)
+
+ggplot() +
+  geom_sf(data = snow_streets) +
+  geom_sf(data = snow_deaths, color = 'red', 
+          alpha = 0.2, size = 3) +
+  geom_sf(data = snow_pumps , shape = 22, 
+          size = 4, fill = 'blue', color = 'blue') +
+  geom_sf_label(data = snow_pumps, aes(label = label),
+                nudge_x = 0.025, nudge_y = -0.5)
+
+```
+
+
+
+{{< pagebreak >}} 
+
+
+![](images_spatial/snow_deaths_streets_pumps_plot.png){fig-align="center" width="500"}
+
+
+
+Congratulations on making your first map in R.
+
+**Exercise**
+
+1.  Recreate the famous John Snow Cholera map, according to the guiding principles of Good Practices in Cartography.
+
+:::

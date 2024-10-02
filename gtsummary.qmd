@@ -1,0 +1,374 @@
+---
+embed-resources: true
+---
+
+# Summary Tables
+
+## Basic Statistical Analysis using R
+
+
+![](images/moderndive.PNG){fig-align="center" width="300"}
+
+### Descriptive statistics
+
+```{r}
+#| include: false
+
+library(tidyverse)
+df <- MASS::birthwt
+df <- df %>% 
+  mutate(smoke = factor(smoke,
+                        levels = c(0,1),
+                        labels = c("Non Smoker",
+                                   "Smoker"))) %>% 
+  mutate(race = factor(race,
+                       levels = c(1,2,3),
+                       labels = c("White",
+                                  "Black",
+                                  "Other"))) %>% 
+  mutate(low = factor(low,
+                      levels =  c(0,1),
+                      labels = c("Normal", 
+                                 "Low Birth Weight")))
+  
+```
+
+**Measures of central tendency**
+
+**Mean** 
+
+The function `mean()` is used to calculate this in R. The basic syntax for calculating mean in R is `mean(x, trim = 0, na.rm = FALSE, ...)`. Following is the description of the parameters used:
+
+x is the input vector. trim is used to drop some observations from both end of the sorted vector. na.rm is used to remove the missing values from the input vector.
+
+**Median** 
+
+The `median()` function is used in R to calculate this value. The basic syntax for calculating median in R is `median(x, na.rm = FALSE)`. Following is the description of the parameters used
+
+x is the input vector. na.rm is used to remove the missing values from the input vector.
+
+The `summarise()` creates a new data frame. It will have one (or more) rows for each combination of grouping variables; if there are no grouping variables, the output will have a single row summarizing all observations in the input. It will contain one column for each grouping variable and one column for each of the summary statistics that you have specified.
+
+**Illustrative example**. Let us calculate mean and median birth weight of all infants in birthwt data.
+
+```{r}
+df %>% 
+  summarize(
+    mean_bwt = mean(bwt, na.rm = F),
+    median_bwt = median(bwt)
+  ) 
+```
+
+**Illustrative example**: Mean of two or more groups. Mean Birth weight among those with history of maternal smoking and those without history of maternal smoking
+
+Most data operations are done on groups defined by variables. `group_by()` takes an existing data set and converts it into a grouped data set where operations are performed "by group".`ungroup()` removes grouping.
+
+```{r}
+df %>% 
+  group_by(smoke) %>% 
+  summarise(mean_bwt = mean(bwt),
+            .groups = "keep") 
+```
+
+**Measures of dispersion**
+
+**Standard deviation** 
+
+`sd` function computes the standard deviation of the values in x. Its syntax is `sd(x, na.rm = FALSE)`. If na.rm is TRUE then missing values are removed before computation proceeds.
+
+```{r}
+df %>% 
+  group_by(smoke) %>% 
+  summarise(mean_bwt = mean(bwt),
+            sd_bwt = sd(bwt),
+            .groups = "keep") 
+```
+
+**Interquartile range** 
+
+`IQR` computes interquartile range of the x values.
+
+```{r}
+df %>% 
+  group_by(smoke) %>% 
+  summarise(median_bwt = median(bwt),
+            iqr_bwt = IQR(bwt),
+            .groups = "keep") 
+```
+
+
+## Publicaton ready summary tables
+
+### Rationale
+
+In routine, it is very time consuming, frustrating, and error prone to write again the results/ outputs obtained from statistical software into the writing and communication documents, be it an article/ manuscript or a dissertation or a thesis.
+
+Further, Most courses and tutorials on Data Analytics using R teach a bunch of R functions but do not lead us to the outcome, which is to produce analyzed tables.
+
+In R, there are certain packages which enable you to create **publication ready tables** which can be incorporated into research dissemination documents directly or with minor modifications. This saves a lot of mundane and unnecessary work and provides more time for interpretation and domain expertise related work.
+
+We shall be using the `gtsummary` package which is compatible with tidy principles of working and creates presentation-ready tables, regression models, and more. The code to create the tables is concise and highly customizable.
+
+![](images/gt_summary.png){fig-align="center" width="100"}
+
+## Introduction to publication ready tables!!
+
+The `tbl_summary()` function calculates descriptive statistics for continuous, categorical, and dichotomous variables in R, and presents the results in a beautiful, customizable summary table ready for publication. To introduce `tbl_summary()` we will show the most basic behaviour first, which actually produces a large and beautiful table. Then, we will examine in detail how to make adjustments and more tailored tables.The default behavior of tbl_summary() is quite incredible - it takes the columns you provide and creates a summary table in one command. The function prints statistics appropriate to the column class: median and inter-quartile range (IQR) for numeric columns, and counts (%) for categorical columns. Missing values are converted to 'Unknown'.
+
+**Illustrative example**: A researcher is interested to know the basic descriptive analysis of the first five variables in `low birth weight` data.
+
+```{r}
+#| include: false
+library(gtsummary)
+library(tidyverse)
+df <- MASS::birthwt
+df <- df %>% 
+  mutate(smoke = factor(smoke,
+                        levels = c(0,1),
+                        labels = c("Non Smoker",
+                                   "Smoker"))) %>% 
+  mutate(race = factor(race,
+                       levels = c(1,2,3),
+                       labels = c("White",
+                                  "Black",
+                                  "Other"))) %>% 
+  mutate(low = factor(low,
+                      levels =  c(0,1),
+                      labels = c("Normal", 
+                                 "Low Birth Weight")))
+  
+```
+
+```{r}
+#| message: false
+#| warning: false
+
+
+df |>  
+  select(low, bwt) |>
+  tbl_summary() |>  
+  as_hux_table()
+```
+
+*Note*
+
+*The sensible defaults with this basic usage: each of the defaults may be customized. Variable types are automatically detected so that appropriate descriptive statistics are calculated. Label attributes from the data set are automatically printed. Missing values are listed as "Unknown" in the table. Variable levels are indented and footnotes are added.*
+
+## Adjustments
+
+### Stratified tables.
+
+You can stratify your table by a column (e.g. by outcome), creating a 2-way table by using `by =` argument in the `tbl_summary()` function.
+
+```{r}
+#| message: false
+
+df |>  
+  select(smoke, low) |> 
+  tbl_summary(by = low) |>  as_hux_table()
+```
+
+### Customizing output of selected variables.
+
+Use an equations to specify which statistics to show and how to display them. There are two sides to the equation, separated by a tilde `~`. On the right side, in quotes, is the statistical display desired, and on the left are the columns to which that display will apply.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low) %>%
+  tbl_summary(
+    by = low,
+    statistic = bwt~"{mean}"
+  ) %>% 
+  as_hux_table()
+```
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low) %>%
+  tbl_summary(
+    by = low,
+    statistic = bwt~"{mean}, {sd}"
+  ) %>% 
+  as_hux_table()
+```
+
+### Changing label of a single variable.
+
+Adjust how the column name should be displayed. Provide the column name and its desired label separated by a tilde. The default is the column name. This is done with help of argument `label =` in `tbl_summary` function.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low) %>%
+  tbl_summary(
+    by = low,
+    statistic = bwt~"{mean}, {sd}",
+    label = bwt ~ "Birth Weight"
+  ) %>% as_hux_table()
+```
+
+### Changing labels of multiple variables.
+
+You can change labels of multiple variables by providing the labels as a `list` to the `label` argument.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low, smoke) %>%
+  tbl_summary(
+    by = low,
+    statistic = bwt~"{mean}, {sd}",
+    label = list(bwt ~ "Birth Weight",
+                 smoke ~ "Smoking history")) %>% as_hux_table()
+
+```
+
+*Can we provide a list to the statistic argument also for customizing statistical output? Try it!*
+
+### Multiline output for a single variable.
+
+If you want to print multiple lines of statistics for variables, you can indicate this by setting the `type =` to `“continuous2”`. You can combine all of the previously shown elements in one table by choosing which statistics you want to show. To do this you need to tell the function that you want to get a table back by entering the type as `continuous2`.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low, smoke) %>%
+  tbl_summary(
+    by = low,
+    type = bwt ~ "continuous2",
+    statistic = bwt~c(
+      "{mean}, {sd}",
+      "{median}, ({p25}, {p75})"),
+    label = list(bwt ~ "Birth Weight",
+                 smoke ~ "Smoking history")) %>% as_hux_table()
+```
+
+### Multiline output for all continuous variables.
+
+If you wish to print multiline output for all continuous variables, instead of providing "continuous2" argument specified by name of the variable, use `continous()` in `type` and `statistic`arguments.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low, smoke, lwt) %>%
+  tbl_summary(
+    by = low,
+    type = all_continuous() ~ "continuous2",
+    statistic = all_continuous()~c(
+      "{mean}, {sd}",
+      "{median}, ({p25}, {p75})"),
+    label = list(bwt ~ "Birth Weight",
+                 smoke ~ "Smoking history")) %>% as_hux_table()
+```
+
+### Multiline output for categorical variables.
+
+The `type` argument in `tbl_summary` function is an optional argument which includes details for the customized outputs according to the type of variables.
+
+```{r}
+#| message: false
+
+df %>% 
+  select(bwt, low, smoke) %>% 
+  tbl_summary(type = all_continuous() ~ "continuous2", 
+              statistic = list(all_continuous() ~ c(
+                "{mean} ({sd})", 
+                "{median} ({p25}, {p75})"), 
+      all_categorical() ~ "{n} ({p}%)"),   
+      digits = all_continuous() ~ 1) %>% # setting for decimal points
+  as_hux_table()
+```
+
+*Tip*
+
+Having a reproducible code works wonders! Try writing this reproducible code for your own tidy dataset. Voila! You will have publication ready tables.
+
+## Inferential statistics and publication ready tables.
+
+Compare the difference in means for a continuous variable in two groups. `add_p()`function from `gtsummary`package adds p-values to `gtsummary` table
+
+**Illustrative example**: `t test`
+
+```{r}
+#| message: false
+
+df |>  
+  select(bwt, smoke) |>  
+  tbl_summary(by = smoke) |>  
+  add_p(bwt ~ "t.test") |>  
+  as_hux_table()
+```
+
+*What happens if we do not pass any argument to* \texttt{add\_p()} function? Try it!
+
+### Statistical tests/ methods available in `add_p()` function.
+
+To find the list of tests available internally within `gtsummary`, type `?gtsummary::tests` in your console. What do you see? There are `tbl_summary()` variants as well as `add_difference` variant. Refer to `gtsummary` vignettes available at <https://cran.r-project.org/web/packages/gtsummary/index.html> for more details.
+
+### Automated Inferential statistics with Publication ready tables
+
+**Illustrative example.** A researcher is interested to know whether there is a significant difference in mean birth weight as well as proportion of low birth weight babies among mothers with history of smoking during pregnancy as compared to those without history of smoking during pregnancy.
+
+To answer the question for this study, the summary statistics should be grouped by smoking history group, which can be done by using the `by=` argument. To compare two or more groups, include `add_p()` with the function, which detects variable type and uses an appropriate statistical test.
+
+```{r}
+#| message: false
+
+df |> 
+  select(smoke, bwt, low) |>  
+  tbl_summary(by = smoke) |>  
+  add_p() |>  
+  as_hux_table()
+```
+
+<!-- ### Hypothesis testing for single mean -->
+
+<!-- **Illustrative example**: A researcher conducted a population based study in XYZ place and found that the mean birth weight of infants is 2500g. Looking at the birth weight dataset, the researcher is curious as to whether the mean birth weight in this data set is similar to XYZ population. In other words, the null hypothesis $H_0: \mu _{bwt} = 2500 g$ -->
+
+<!-- ### Hypothesis testing for single proportion -->
+
+<!-- **Illustrative example**: $H_0: p\_{smoke} = 0.4$ -->
+
+<!-- ### Hypothesis testing: difference between means -->
+
+<!-- **Illustrative example**: -->
+
+<!-- \begin{equation} -->
+
+<!-- H_0: \mu _{bwt-non-smoke} = \mu _{bwt-smoke}  -->
+
+<!-- \end{equation} -->
+
+<!-- ### Test of independence: Chi square test -->
+
+<!-- **Illustrative example**:  -->
+
+<!-- \begin{equation} -->
+
+<!-- H_0: p _{low-non-smoke} = p _{low-smoke}  -->
+
+<!-- \end{equation} -->
+
+<!-- ### Correlations -->
+
+<!-- **Illustrative example**: Correlation between maternal weight before pregnancy and infant birth weight -->
+
+## `report` a Data
+
+The `report` package core objective is to streamline the process of presenting models and data frames in adherence to established formatting standards such as APA style. By automating the report generation process, "report" ensures consistency and quality in the presentation of results, facilitating the dissemination of research findings while adhering to best practices guidelines. 
+
+We haven't explored the details of the 'report' package yet, but it's an exciting tool. It connects R's analytical power with the polished presentation needed for scholarly papers. Taking a closer look at its features could offer valuable insights and benefits.
+
+## Way forward {.unnumbered}
+
+We have introduced you to one of the most powerful package currently used to develop publication ready tables. It might seem that there is a lot to learn for making publication ready tables using R. Initially, one might feel unnecessary to learn these syntax. However, if you seriously are into creating tables in your professional career, it is recommended and worth investing time to learn these syntax. We are confident your initial effort will save a lot of time subsequently and make you more efficient and accurate in future. Best wishes!
+
+

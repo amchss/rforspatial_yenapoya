@@ -1,0 +1,17 @@
+---
+embed-resources: true
+---
+
+Day Three continues with a recap and doubt clearance session, followed by an in-depth exploration of spatial epidemiology. Participants will engage with real-life examples, including the historical John Snow map exercise. The session will then introduce different types of spatial data (areal, geostatistical, point patterns, spatio-temporal, and mobility data) along with practical exercises.
+
+The afternoon session covers advanced spatial epidemiology concepts, such as spatial autocorrelation and clustering, with hands-on exercises using global and local measures. The workshop will conclude with demonstrations of real-life examples, followed by a feedback and valedictory session.
+
+
+## Topics Covered Today
+
+- [Introduction to Spatial Epidemiology](intro_spatial.qmd)
+
+- [Spatial Data Manipulation](spatial_data_mani.qmd)
+
+- [Spatial Analysis](spatial_analysis.qmd)
+

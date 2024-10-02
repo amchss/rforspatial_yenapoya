@@ -1,0 +1,50 @@
+{
+  "index.qmd": {
+    "index.html": "a6ee9ee7"
+  },
+  "about.qmd": {
+    "about.html": "8d0765fe"
+  },
+  "data_visual.qmd": {
+    "data_visual.html": "a3fd3277"
+  },
+  "day_one.qmd": {
+    "day_one.html": "a756e6f3"
+  },
+  "day_three.qmd": {
+    "day_three.html": "fab90a0b"
+  },
+  "day_two.qmd": {
+    "day_two.html": "b13f4a87"
+  },
+  "exploring_data.qmd": {
+    "exploring_data.html": "de39adad"
+  },
+  "fundamentals_dplyr.qmd": {
+    "fundamentals_dplyr.html": "c78a301b"
+  },
+  "gtsummary.qmd": {
+    "gtsummary.html": "4b862b03"
+  },
+  "intro.qmd": {
+    "intro.html": "55b26a14"
+  },
+  "intro_r.qmd": {
+    "intro_r.html": "81c96397"
+  },
+  "intro_spatial.qmd": {
+    "intro_spatial.html": "f48b52d0"
+  },
+  "quarto.qmd": {
+    "quarto.html": "098fe76f"
+  },
+  "spatial_analysis.qmd": {
+    "spatial_analysis.html": "8fb963dd"
+  },
+  "spatial_data_mani.qmd": {
+    "spatial_data_mani.html": "60583965"
+  },
+  "spatial_data_visual.qmd": {
+    "spatial_data_visual.html": "08fed69c"
+  }
+}

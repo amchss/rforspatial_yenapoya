@@ -1,0 +1,81 @@
+---
+title: "National Workshop on Data Analysis and Spatial Epidemiology using R"
+embed-resources: true
+---
+
+::: {style="text-align:justify"}
+This website is intended as a companion website and reference material for the three-day *National Workshop on Data Analysis and Spatial Epidemiology Using R: A Hands-on Training for Health Professionals*, organized by the Department of Public Health, Yenepoya Faculty of Allied and Healthcare Professions, Yenepoya (Deemed to be University), Mangalore, in association with the Edward & Cynthia Institute of Public Health.
+
+The overall goal of the workshop is to provide an introduction to R programming language, the RStudio interface and the `tidyverse` workflows in data analysis and build a strong foundation in spatial epidemiology for healthcare professionals. This is also aimed at providing basic instructions on data wrangling, visualization, and communicating research findings effectively using principles of reproducible research.
+:::
+
+### What is covered in the workshop?
+
+::: {style="text-align:justify"}
+The workshop is designed to span three days, with each day consisting of both interactive lectures and hands-on sessions to provide a comprehensive introduction to data analysis and spatial epidemiology using R.
+
+The morning of Day One starts with an introduction and icebreaker session, setting the stage for the workshop by covering key concepts in data science and spatial epidemiology using R. This is followed by a session to familiarize participants with the R programming environment and RStudio, including installation, interface layout, and key features. Participants will then engage in hands-on exercises to work with basic data types such as vectors, matrices, and data frames.
+
+The afternoon session will focus on the fundamentals of working with data in R, including managing file paths, working directories, and importing data. Participants will also be introduced to the concept of tidy data and engage in practical exercises on data wrangling using the `dplyr` package. The day concludes with an introduction to the Quarto framework through a group activity.
+
+Day Two begins with a recap of Day One and an opportunity for participants to ask questions. The morning session dives into data visualization using the `ggplot2` package, covering the visualization of single, two, and multiple variables, followed by hands-on tutorials. The session then shifts towards spatial epidemiology, introducing its relevance to public health and covering fundamental concepts such as geometry, projections, and spatial data structures (vector and raster). Participants will explore spatial data through hands-on activities, including importing, exporting, and visualizing spatial data using choropleths and boxplots.
+
+The afternoon session will focus on spatial data visualization and map-making, where participants will create maps adhering to Cartographic Guidelines for Public Health. The day concludes with an introduction to Quarto and a session on generating publication-ready tables using the `gtsummary` package.
+
+Day Three continues with a recap and doubt clearance session, followed by an in-depth exploration of spatial epidemiology. Participants will engage with real-life examples, including the historical John Snow map exercise. The session will then introduce different types of spatial data (areal, geostatistical, point patterns, spatio-temporal, and mobility data) along with practical exercises.
+
+The afternoon session covers advanced spatial epidemiology concepts, such as spatial autocorrelation and clustering, with hands-on exercises using global and local measures. The workshop will conclude with demonstrations of real-life examples, followed by a feedback and valedictory session.
+:::
+
+### What is not covered in the workshop? {.unnumbered}
+
+::: {style="text-align:justify"}
+This workshop does not provide in-depth coverage of advanced spatial epidemiology methods or geospatial programming beyond the basics. While we will introduce key concepts in spatial epidemiology, data science, and visualization using R, the focus is on practical, hands-on skills rather than detailed theoretical or statistical analyses. Participants seeking more advanced or specialized training in areas like advanced spatial statistics or geostatistical modeling may consider future workshops if there is enough interest and a sufficient number of participants.
+:::
+
+# Schedule {.unnumbered}
+
+| Date | Session | Time | Topic |
+|----------------|----------------|----------------|------------------------|
+| Day 1 | Morning | 09:00 -- 10:15 | Registration & Inauguration |
+|  |  | 10:15 -- 10:45 | Introduction and Icebreaker |
+|  |  | 10:45 -- 11:00 | Tea |
+|  |  | 11:00 -- 11:15 | Getting comfortable with R and RStudio (Interactive Lecture) |
+|  |  | 11:15 -- 11:45 | Getting Comfortable with R and RStudio (Hands-On) |
+|  |  | 11:45 -- 12:00 | Primer Concepts (Interactive Lecture) |
+|  |  | 12:00 -- 12:30 | Primer Concepts (Hands - On) |
+|  |  | 12:30 -- 13:15 | Lunch |
+|  | Afternoon | 13:15 -- 13:45 | Fundamentals of Working with Data (Interactive Lecture) |
+|  |  | 13:45 -- 14:15 | Fundamentals of Working with Data (Hands-On) |
+|  |  | 14:15 -- 14:30 | Fundamentals of Working with Data (Interactive Lecture) |
+|  |  | 14:30 -- 14:45 | Fundamentals of Working with Data (Hands-On) |
+|  |  | 14:45 -- 15:15 | Exploring Data with R (Interactive Lecture) |
+|  |  | 15:15 -- 15:30 | Exploring Data with R (Hands- On) |
+|  |  | 15:30 -- 16:00 | Exploring Data with R (Interactive Lecture) |
+|  |  | 16:00 -- 16:15 | Tea |
+|  |  | 16:15 --17:00 | Exploring Data with R & Introduction to Quarto (Interactive Lecture and Hands-On) |
+| Day 2 | Morning | 09:00 -- 09:30 | Recap of the previous day & Doubt Clearance Session |
+|  |  | 09:30 -- 10:00 | Data Visualization (Interactive Lecture) |
+|  |  | 10:00 -- 10:20 | Break fast & Tea break |
+|  |  | 10:20 -- 10:45 | Data Visualization (Hands-On) |
+|  |  | 10:45 -- 11:15 | Introduction to Spatial Epidemiology (Interactive lecture) |
+|  |  | 11:15 -- 11:45 | Refresh on the basic concepts (Interactive lecture) |
+|  |  | 11:45 -- 12:15 | Spatial Exploratory Data Analysis (Interactive lecture) |
+|  |  | 12:30 -- 13:15 | Lunch |
+|  | Afternoon | 13:15 -- 13:45 | Spatial Exploratory Data Analysis (Hands-on) |
+|  |  | 13:45 -- 14:30 | Spatial Data Visualization using R & Map making (Interactive lecture) |
+|  |  | 14:30 -- 15:30 | Spatial Data Visualization using R& Map Making (Hands on) |
+|  |  | 15:30 -- 16:00 | Introduction to Quarto |
+|  |  | 16:00 -- 16:15 | Tea |
+|  |  | 16:15 -- 17:00 | Publication Ready Tables (Lecture cum Hands on) |
+| Day 3 | Morning | 09:00 -- 09:30 | Recap of the previous day & Doubt Clearance Session |
+|  |  | 09:30 -- 10:00 | Spatial Epidemiology (Interactive lecture) |
+|  |  | 10:00 -- 10:20 | Tea |
+|  |  | 10:20 -- 10:45 | Spatial Epidemiology (Hands-on) |
+|  |  | 10:45 -- 12:30 | Spatial Data Types (lecture & Hands-on) and basics of spatial data analysis |
+|  |  | 12:30 -- 13:30 | Lunch |
+|  | Afternoon | 13:30 -- 14:30 | Spatial autocorrelation and advanced spatial Epidemiology |
+|  |  | 14:30 -- 14:35 | Bio-Break |
+|  |  | 14:35 -- 15:00 | Spatial autocorrelation and advanced spatial Epidemiology (hands on) |
+|  |  | 15:00 -- 15:30 | Advanced concepts and real-life examples- demo session |
+|  |  | 15:30 -- 16:00 | Valedictory and Feedback |

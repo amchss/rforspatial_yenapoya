@@ -1,0 +1,340 @@
+---
+embed-resources: true
+---
+
+# Spatial Data Manipulation
+
+:::{style="text-align:justify"}
+
+It is expected that by end of the session, students will be able to understand as well as apply varied methods for manipulation of spatial datasets.
+
+:::
+
+## Importing spatial data as `sf` object into R.
+
+### Why importing as sf object is recommended?
+
+:::{style="text-align:justify"}
+
+Simple features are open standard objects which have been endorsed by Open Geospatial Consortium. They represent heirarchial data model for 17 geometry types.
+
+During this session and in subsequent session on Spatial Epidemiology, we shall be using `sf` package. This is because *sf* package has inbuilt capabilities of handling 7 most common data models of simple features. Further,R spatial ecosystem is more efficient with use of *sf* package compared to previous packages.
+
+Shapefile format data can be imported into the R ecosystem using `st_read()` or `read_sf()` function. Both are similar in function with subtle differences. `read_sf()` chooses a few tidyverse defaults such as silent (`st_read()` gives a short report), returns a spatial tibble (`st_read()` returns a `dataframe`), doesnot convert strings to factors (`st_read()` converts to factors by default) and accepts list columns as input. For other formats `st_as_sf()` contains a family of conversion functions.
+
+:::
+
+## Understanding and Tranformation of Coordinated Reference System (CRS).
+
+### Know the CRS
+
+:::{style="text-align:justify"}
+
+To know the crs of a spatial dataset, use `sf::st_crs()` function.
+
+:::
+
+### Transforming CRS of Spatial Data
+
+:::{style="text-align:justify"}
+
+When we have two or more related spatial datasets, and the CRS are different, we can transform the CRS using `sf::st_transform()` function.
+
+:::
+
+### Loading datasets
+
+```{r}
+
+#Install packages. We need to install packages only once in the system.
+#install.packages("sf")
+#install.packages("tidyverse")
+#Load library. We need to load library everytime to use the functions
+library(tidyverse)
+library(sf)
+```
+
+### World map.
+
+```{r}
+world <- read_rds(here::here("data", "world_india_compliant.rds"))
+
+st_crs(world)
+```
+
+### India map with state boundaries.
+
+```{r}
+india <- read_rds(here::here( "data", "india_states.rds"))
+
+india <- india |> 
+  janitor::clean_names()
+
+st_crs(india)
+
+# Transform to Geog CRS as that of world map
+
+india <- st_transform(india, crs = 4326)
+
+```
+
+### Kerala map with panchayat boundaries.
+
+```{r}
+
+kerala <- read_rds(here::here("data","ker_panchayats.rds"))
+
+# Clean names
+
+kerala <- kerala |> 
+  janitor::clean_names()
+
+# Check CRS
+st_crs(kerala)
+```
+
+### Anonymised Dengue occurence point data from Trivandrum District.
+
+```{r}
+
+# Reading RDS
+df <- read_rds(here::here( "data", "dengue_sample.rds"))
+
+# Cleaning names 
+df <- df |> 
+  janitor::clean_names()
+
+# Converting as sf object
+df <- st_as_sf(df, coords = c("longitude", "latitude"), crs = 4326)
+```
+
+## Manipulating Spatial Data based on their location and shape.
+
+### Subset Spatial data based on attributes.
+
+:::{style="text-align:justify"}
+
+The process of selecting only those locations which have a specified attribute is known as sub-setting and the output is subset. It is done to understand spatial distribution of a given variable and thus identify underlying patterns. `sf` objects have inherent dataframe class. Hence, `tidyverse::filter()` function can be used for obtaining spatial subsets.
+
+```{r}
+# Example: Subset district from Kerala map whose name is Thiruvananthapuram
+
+tvm <- kerala %>% 
+  filter(district == "Thiruvananthapuram")
+
+#Overview
+tvm %>% 
+  ggplot()+
+  geom_sf()
+```
+
+:::
+
+### Spatial relationships based on Topology
+
+:::{style="text-align:justify"}
+
+Topology is defined as spatial relationship between the objects. These include relationships such as common boundaries, intersections, one within the other, crossings, disjunctions, etc.
+
+```{r}
+# To identify block from which cases have been reported: 
+#It will include all cases which are within as well as 
+#on the boundary of a polygon.
+
+(list <- st_intersects(df, tvm))
+```
+
+Similarly, `st_within()` is used to find the relationship for those strictly within boundaries, `st_disjoint(`) is opposite of `st_intersect()`, `st_touches()` is for those objects which are touching each other (eg. polygons) and `st_within_distance()` for the objects within a buffer distance from the said object.
+
+:::
+
+### Spatial overlay/ joins
+
+:::{style="text-align:justify"}
+
+Presence of a unique key is pre-requisite to joining of datasets. The same concept is utilised for overlay or joining of two or more spatial datasets with location coordinates as unique key. `st_join()` performs spatial joins using location coordinates as unique key. By default, left join is undertaken. in is performed.
+
+```{r}
+
+dim(df)
+
+names(df)
+
+dim(tvm)
+
+names(tvm)
+
+joined <- st_join(df, tvm)
+
+dim(joined)
+
+names(joined)
+
+joined %>% ggplot()+
+  geom_sf()
+```
+
+:::
+
+### Obtaining aggregated spatial data
+
+:::{style="text-align:justify"}
+
+Aggregation of spatial data is a process of condensing the dataset to obtain stratified summary measures.
+
+```{r}
+# Example: To get list of number of cases from each block
+joined %>% 
+  group_by(block) %>% 
+  summarise(cases = sum(dengue))
+```
+
+:::
+
+### Area calculations.
+
+
+To determine area of a polygon, `st_area()` function is used.
+
+```{r}
+#Example
+tvm %>% 
+  filter(panchayat == "Pallickal") %>% 
+  st_area()
+```
+
+## Geometry based functions.
+
+:::{style="text-align:justify"}
+
+We can transform geometries with uniary and binary transformations. Uniary transformations are based on a single geometry in isolation and includes measures such as creation of buffers and centroids. Binary operations modify the shape of one geometry based on the other and includes measures such as clipping and geometry unions.
+
+:::
+
+### Centroid creation.
+
+:::{style="text-align:justify"}
+
+The centroid based processes identify the center of a `sf` object and is similar to measure of central tendency. There are many variations in ways to define centre of an `sf` object, however, use of geographical centre remains most common. `st_centroid()` provides centroid values.
+
+```{r}
+polygon_tvm <- tvm %>% 
+  ggplot()+
+  geom_sf()+
+  labs(title = "Map")
+
+point_tvm <- st_centroid(tvm) %>%  
+  ggplot()+
+  geom_sf()+
+  labs(title = "Centroids")
+
+ggpubr::ggarrange(polygon_tvm, point_tvm)
+```
+
+:::
+
+### Adding centroids to the dataset.
+
+```{r}
+tvm <- cbind(tvm, st_coordinates(st_centroid(tvm)))
+```
+
+### Buffer creation
+
+```{r}
+ggplot()+
+  geom_sf(data = tvm %>% 
+  filter(panchayat == "Pallickal") %>% 
+  st_centroid() %>% 
+  st_buffer(dist = 5000) )+
+  geom_sf(data = df)
+```
+
+## Saving Spatial Data and its output.
+
+:::{style="text-align:justify"}
+
+Though `st_write()` function helps in saving spatial datasets as shapefiles, it is recommended that RDS data format be used as it uses less space in the system and is computationally faster to load subsequently.
+
+:::
+## Methods for spatial data manipulation of Raster datasets.
+
+### CRS
+
+:::{style="text-align:justify"}
+
+To know as well as to set CRS of a raster data, `raster::projections()` function is used. The further difference as compared to vector data is that CRS has to be provided in proj4 definition format for the raster datasets. It does not accept CRS input in espg format.
+
+:::
+
+### Resolution
+
+:::{style="text-align:justify"}
+
+Similar to area calculations in a vector dataset, we would like to know about the resolution of the raster data. The `res()` function provides dimensions of each of the cell of the raster grid in metres (By default, UTM projection is in metres).
+
+:::
+
+### Raster data subsets.
+
+:::{style="text-align:justify"}
+
+To extract value for a specified location `raster::cellFromXY()` function can be used.
+
+To subset based on extent, the bounding box details can be used.
+
+To subset based on extent of a polygon/ other available vector dataset
+
+:::
+
+## Extract raster values for a given location.
+
+:::{style="text-align:justify"}
+
+To extract values for a given location, there are multiple methods. The `raster::extract()` function is computationally demanding and takes a lot of time, especially for extracting raster data for a large number of polygons. An alternative from terra package as well as veloxraster appears promising but needs further deliberations.
+
+:::
+
+### Map algebra.
+
+:::{style="text-align:justify"}
+
+Understanding of map algebra makes raster processing faster. There are four subclasses of raster based operations as under:-
+
+:::
+
+### 1. Local.
+
+These operations act independently for each cell of the raster.
+
+### 2. Focal.
+
+:::{style="text-align:justify"}
+
+Also known a kernel, moving window or filter operations for raster data, they choose a central cell and its neighbourhood (such as surrounding eight cells, for example). The focal operation acts similar to spatial data aggregation and results in an output of aggregated values for each combination of central cell and its neighbourhood. `raster::focal()` function can be used for obtaining focal values by defining the matrix for central cell and its neighbourhood.
+
+:::
+
+### 3. Zonal.
+
+:::{style="text-align:justify"}
+
+The principle behind zonal operations is same as that of focal operations. However, unlike in focal operations, zonal operations can go beyond a rectangular matrix of neighbourhood and can provide aggregated values for a pre-defined shape or distance or area, etc. The `raster::zonal()` function provides zonal statistics.
+
+:::
+
+### Global.
+
+:::{style="text-align:justify"}
+
+These operations are applied on the entire dataset and are used to summarise the characteristics of the given raster data such as mean, median, IQR, range etc of the datasets.
+
+:::
+
+## Merging rasters.
+
+:::{style="text-align:justify"}
+
+Two rasters can be merged using `raster::merge()` function in general. However, depending upon the raster characteristics, more refined methods are available such as from packages landsat, satellite, etc. Merging rasters require same resolution and crs of the rasters as prerequisites.
+
+:::

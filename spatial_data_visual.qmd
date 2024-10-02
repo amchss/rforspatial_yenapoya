@@ -1,0 +1,432 @@
+---
+embed-resources: true
+---
+
+# Visualizing Spatial Data
+
+:::{style="text-align:justify"}
+
+The role of spatial data visualization in understanding distribution and determinants of a disease were classically demonstrated in John Snow's work in cholera epidemic of Golden Square, London in 1854 and maps have remained the most common applied aspect of spatial epidemiology till date. Maps enable real time visualizations. However, though the concepts of spatial data visualization has its historical roots in the practice of cartography^[The science and art of making maps], with the evolution of map making computational abilities, the requirement to know the cartography concepts for visualization spatial data for general use has decreased to minimal. For eg. we can point a location in Google maps and reach a destination without deliberations on cartographic concepts (such as northing, scale, etc). This has led to *neogeography*^[The process of map creation as primary objective but owing little to past cartographic traditions.] and thus crowd-sourced databases due to volunteer contributions.   
+
+In professional and academic forums, the concepts of cartography are pre-requisites to meaningful spatial data visualization. Further, the concept of using visualization methods has evolved from just a tool for communication to the concept of visualization as an analysis tool. Visualization of spatial data is used to understand distribution patterns and generate hypothesis as well as for inferential procedures. The underlying principles in Scientific  visualization has led to use of visualization methods as complementary to statistical inference procedures in spatial epidemiology. For example, the interpretation of Moran's I^[Measure of spatial clustering. Details covered in "Measures of Spatial Clustering" session] is incomplete without accompanying visualization of dataset. The maps as analysis tools have several possible meanings and are thus polysemic in nature. 
+
+
+
+### Expectations from the present session  
+
+It is expected that by end of this session, students should be able to develop visualizations, understand and communicate epidemiological information, and develop hypothesis based on the visual representations of spatial datasets.
+
+:::
+
+
+## Graphic Variables  
+
+:::{style="text-align:justify"}
+
+$Jacques$ $Bertin$, a french cartographer published a book $Semiologie$ $Graphique$, which brought forward concept of graphic variables. These variables highlight **methods using which different information can be obtained from the data**. The seven graphic variables as mentioned in $Semiology$ $of$ $graphics$ (English version) are as under:-  
+
+:::
+
+### Location  
+
+:::{style="text-align:justify"}
+
+The location of a spatial object varies with changing projections. It is important to understand that the transformation of CRS from geographic to projected, from raster to vector should be done with caution. The method of choice should be guided by the research objectives and need to preserve shape or location. 
+
+:::
+
+### Value  
+
+:::{style="text-align:justify"}
+
+The value of a variable is related to the darkness/ lightness of a symbol. It is usually used for variables on an interval or ratio scale. Traditionally, higher values are depicted darker. 
+
+:::
+
+### Color
+
+:::{style="text-align:justify"}
+
+Color can be considered as most complex graphic variable. It represents varied sensations to different viewers. In addition, human eye is not equally sensitive across the spectrum of colors. Further, cultural affiliations, traditional representations and understandings provide challanges. A golden rule recommended is to first use color-blind friendly palettes. In the domain of Public Health, it is important to consider the color and its depiction during visualization to avoid ambiguous communication. For example: Color choice in vaccination coverage visualization as compared to color choice in obesity.
+ 
+:::
+
+### Size
+
+:::{style="text-align:justify"}
+
+In proportional symbol maps, the size of a symbol represents the difference in quantum of observations. The underlying type of data, classification adopted, transformations, and outlier management among others should be explored during visualizations. 
+
+:::
+
+### Shape
+
+:::{style="text-align:justify"}
+
+Similar to size, choice of shape of the symbol can provide clarity or increase confusion, if not considered carefully. Different shapes can be provided to distinguish different types of variables. The same can be considered to distinguish sub-types of a variable. For example, dotted lines and solid lines can be used to distinguish roads from rivers but can also be used to distinguish main roads from side-roads. Understanding of datasets and variables help in deciding correct shapes for representation of data.
+
+:::
+
+### Space
+
+:::{style="text-align:justify"}
+
+The arrangement of symbols can also be used to represent differences. For example: In a dot map representing dengue occurrence data, space between the dots represent disease clustering, if any. Again, the interpretation of a variable needs careful consideration, as the case occurrence may be higher just because of underlying population figures and not otherwise.
+
+:::
+
+### Orientation
+
+:::{style="text-align:justify"}
+
+Understanding the orientation of a pattern may provide critical insights into disease epidemiology. For eg. occurrence of a disease along with the course of a river may indicate risk factors associated with disease. 
+
+:::
+
+## Map components
+
+### Map 
+
+The vector or raster map is central to map visualizations.
+
+### Title  
+
+:::{style="text-align:justify"}
+
+A short and clear title must be provided. In addition, subtitles can be added, if required.
+
+:::
+
+### Distance and Scale.
+
+:::{style="text-align:justify"}
+
+There are two options for displaying information related to distance and scale in a map.   
+1. Display of a scale bar.  
+2. Use of x and y axes of the display as labeling axes. 
+
+:::
+
+### Direction  
+
+:::{style="text-align:justify"}
+
+Similar to symbolism of scale, direction can be displayed as a symbol or can be implicit in the labeled axes. Conventionally, true North is provided as a symbol in maps.
+
+:::
+
+### Legend
+
+:::{style="text-align:justify"}
+
+Not all maps require a legend. When present, due consideration to Graphic variables should be given.
+
+:::
+
+### Credits
+
+:::{style="text-align:justify"}
+
+The data sources, source of geospatial files should be provided. 
+
+:::
+
+## Datasets used
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+#Install packages. We need to install packages only once in the system.
+#install.packages("sf")
+#install.packages("tidyverse")
+#Load library. We need to load library everytime to use the functions
+library(tidyverse)
+library(sf)
+```
+
+
+### World map.  
+
+```{r}
+world <- read_rds(here::here( "data","world_india_compliant.rds"))
+
+st_crs(world)
+```
+
+### India map with state boundaries.  
+
+```{r}
+india <- readRDS(here::here("data", "india_states.rds"))
+
+names(india) <- epitrix::clean_labels(names(india))
+
+st_crs(india)
+
+## Transform to Geog CRS as that of world map
+india <- st_transform(india, crs = 4326)
+
+```
+
+### Kerala map with panchayat boundaries.  
+
+```{r}
+
+kerala <- readRDS(here::here( "data","ker_panchayats.rds"))
+
+## Clean names
+names(kerala) <- epitrix::clean_labels(names(kerala))
+
+## Check CRS
+st_crs(kerala)
+```
+
+<!-- ### COVID-19 state wise aggregated datasets.   -->
+
+<!-- ```{r message=FALSE, warning=FALSE} -->
+<!-- covid <- data.table::fread("https://api.covid19india.org/csv/latest/state_wise_daily.csv") -->
+<!-- ## Subset confirmed cases -->
+<!-- covid <- covid %>% filter(Status == "Confirmed") -->
+<!-- ## Tidy data format -->
+<!-- covid <- covid %>% pivot_longer(3:41, -->
+<!--                        names_to = "state", -->
+<!--                        values_to = "cases") -->
+<!-- ## Calculating cumulative cases -->
+<!-- covid <- covid %>% group_by(state) %>% mutate(cumsum = cumsum(cases)) -->
+<!-- ``` -->
+
+### Anonymised Dengue occurence point data from Trivandrum District. 
+
+```{r}
+## Reading RDS
+dat <- readRDS(here::here( "data", "dengue_sample.rds"))
+
+## Cleaning names 
+dat <- dat |> 
+  janitor::clean_names()
+
+## Converting as sf object
+dat <- st_as_sf(dat, coords = c("longitude", "latitude"), crs = 4326)
+```
+
+
+## Understanding the process of Map creation.   
+
+
+```{r}
+india %>%  
+  ggplot() + ## Using template
+  geom_sf() + ## Creating a Base map.
+  labs(title = "India map", ## Adding Title.
+       subtitle = "For Workshops") + ## Adding sub-title. 
+  ggspatial::annotation_scale(location = "bl") + ## Describing Distance and Scale.
+  ggspatial::annotation_north_arrow(location = "tr") + ## Direction symbols.
+  xlab("Longitude") + ## Adding axis labels  
+  ylab("Latitude") +
+  geom_text(aes(x = 87.5, y = 10.3, label = "Credits: AMCHSS, SCTIMST"), ## Acknowledging Credits.
+             color = "black", check_overlap = T, size = 3)
+```
+
+### Adding labels and legends.
+
+:::{style="text-align:justify"}
+
+Addition of labels and legends is optional in map making. In the India map, we have just used above for demonstration,
+
+:::
+
+### Option 01 for adding labels: Use of 'geom_sf_label()' function.
+
+```{r}
+#adding abbreviations
+india$abbr <- c("LA","AP",
+              "AR", "AS",
+              "BR", "CH",
+              "CT",
+              "DDDN", "DL",
+              "GA", "GJ",
+              "HR", "HP",
+              "JH", "KA",
+              "KL", "MP",
+              "MH","MN",
+              "ML", "MZ",
+              "NL", "OR",
+              "PY", "PB",
+              "RJ", "SK",
+              "TN", "TR",
+              "UP", "UT",
+              "WB", "TG",
+              "JK", "LD", "AN")
+### labeling abbreviations
+india %>%  
+  ggplot() + ## Using template
+  geom_sf() + ## Creating a Base map.
+  labs(title = "India map", ## Adding Title.
+       subtitle = "For Workshops") + ## Adding sub-title. 
+  ggspatial::annotation_scale(location = "bl") + ## Describing Distance and Scale.
+  ggspatial::annotation_north_arrow(location = "tr") + ## Direction symbols.
+  xlab("Longitude") + ## Adding axis labels  
+  ylab("Latitude") +
+  geom_text(aes(x = 87.5, y = 10.3, label = "Credits: AMCHSS, SCTIMST"), ## Acknowledging Credits.
+             color = "black", check_overlap = T, size = 3) +
+  geom_sf_label(aes(label = abbr))
+```
+
+### Option 2 for adding labels: Use of centroids.
+
+```{r}
+## Adding centroids
+
+india <- cbind(india, st_coordinates(st_centroid(india)))
+
+## plot
+india %>%  
+  ggplot() + ## Using template
+  geom_sf() + ## Creating a Base map.
+  labs(title = "India map", ## Adding Title.
+       subtitle = "For Workshops") + ## Adding sub-title. 
+  ggspatial::annotation_scale(location = "bl") + ## Describing Distance and Scale.
+  ggspatial::annotation_north_arrow(location = "tr") + ## Direction symbols.
+  xlab("Longitude") + ## Adding axis labels  
+  ylab("Latitude") +
+  geom_text(aes(x = 87.5, y = 10.3, label = "Credits: AMCHSS, SCTIMST"), ## Acknowledging Credits.
+             color = "black", check_overlap = T, size = 3) +
+  geom_text(aes(x = X, y = Y, label = abbr),
+            color = "black", fontface = "bold", check_overlap = T, size = 2)
+```
+
+
+
+
+## Visualisation of point data.  
+
+:::{style="text-align:justify"}
+
+**Kindly note: For the purpose of clarity on a particular aspect of the map, we will avoid placing all components of a map across the session. This is important to understand that when communicating maps/ figures, all components should be present.**
+
+:::
+
+### Dot Maps.  
+
+:::{style="text-align:justify"}
+
+The simplest method to visualize disease occurrence patterns is creation of dot maps. They help us understand spatial dependencies in disease occurrence. The spatial clustering of a disease is suggestive of factors present/ absent in locations with high disease occurrence as compared to locations with low disease occurrence. Thus, point maps provides visual tool for providing estimates of Spatial Clustering. Important limitation of these dot maps is the inability to visualize independent events as the number of observations increase or multiple events are observed at the same location. To overcome the same methods such as smoothing, rasterization and dot density maps is recommended.
+
+:::
+
+### Illustrative Example
+
+Let us create a dot map of dengue cases on Kerala map.
+
+```{r}
+## Dot map of Dengue occurrence 
+ggplot()+
+  geom_sf(data = kerala)+
+  geom_sf(data = dat)
+```
+
+As seen above, all the cases are seen clustered in lower part of Kerala. Hence, we will subset Kerala map and plot again.
+```{r}
+tvm <- kerala %>% 
+  filter(district == "Thiruvananthapuram")
+
+ggplot()+
+  geom_sf(data = tvm)+
+  geom_sf(data = dat)
+```
+
+Lets separate the cases according to gender distribution.
+
+```{r fig.width=6}
+ggplot()+
+  geom_sf(data = tvm)+
+  geom_sf(data = dat, aes(color = sex1))+ #To change size, use size argument in aes
+  labs(title = "Dengue occurence in Trivandrum",
+       subtitle = "Color according to gender.",
+       color = "Sex")+
+  xlab("Longitude")+
+  ylab("Latitude")+
+  ggspatial::annotation_north_arrow(location = "br")+
+  ggspatial::annotation_scale(location = "bl")
+```
+
+## Visualisation of aggregate data 
+
+### Choropleth Maps  
+
+:::{style="text-align:justify"}
+
+The term "choropleth" is derived from Greek words $Khoros$ meaning "place" and $plethein$ meaning "full". In choropleth maps, aggregated value for a given area forms the basis of visual representation. The three major challanges in intrepretation of choropleth maps arise from large area polygons, Modified Unit Area Problem, and presence of skewed data. Deliberation on these issues, creation of cartograms, data transformation methods such Box-Cox transformations and multi-level analysis are recommended to overcome these limitations. 
+
+:::
+
+### Example
+
+```{r}
+## Aggregate dengue occurence based on polygon file
+joined <- st_join(dat, tvm)
+
+aggregated <- joined %>% 
+  group_by(joined$block) %>% 
+  summarise(cases = n()) 
+
+choropleth <- st_join(tvm, aggregated)
+
+## Plot choropleth map
+names(choropleth)
+
+ggplot()+
+  geom_sf(data = choropleth, aes(fill = cases))
+```
+
+
+
+
+
+
+## Inset maps
+
+:::{style="text-align:justify"}
+
+To provide understanding of the study location, inset maps are useful. 
+
+:::
+
+```{r echo=FALSE}
+## Creating individual maps
+ind_inset <- india %>% 
+  ggplot()+ 
+  geom_sf(color = if_else(india$name_1 ==  "Kerala", 
+                          "red", 
+                          "black")) + 
+  labs(title = "India Map")
+
+ker_inset <- kerala %>% 
+  ggplot()+
+  geom_sf(color = if_else(kerala$district == "Thiruvananthapuram", 
+                          "red", 
+                          "black"))+ 
+  labs(title = "Kerala Map")
+
+tvm_inset <- tvm %>% 
+  ggplot()+
+  geom_sf()+ 
+  labs(title = "Study location: Trivandrum district")+
+  xlab("Longitude")+
+  ylab("Latitude")+
+  ggspatial::annotation_north_arrow(location = "br")+
+  ggspatial::annotation_scale(location = "bl")
+
+## Creating inset map
+ggplot() +
+  coord_equal(xlim = c(0, 28), ylim = c(0, 20), expand = FALSE) +
+  annotation_custom(ggplotGrob(tvm_inset), xmin = 0, xmax = 20, ymin = 0, ymax = 20) +
+  annotation_custom(ggplotGrob(ind_inset), xmin = 20, xmax = 28, ymin = 11.25, ymax = 19) +
+  annotation_custom(ggplotGrob(ker_inset), xmin = 20, xmax = 28, ymin = 2.5, ymax = 10.25) +
+  theme_void()+
+  labs(title = "Illustrative example to show your study site")
+```
+
+
+

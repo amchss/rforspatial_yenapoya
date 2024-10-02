@@ -1,0 +1,31 @@
+---
+embed-resources: true
+---
+
+## Overview: Day Two
+
+:::{style="text-align:justify"}
+
+The morning of Day One starts with an introduction and icebreaker session, setting the stage for the workshop by covering key concepts in data science and spatial epidemiology using R. This is followed by a session to familiarize participants with the R programming environment and RStudio, including installation, interface layout, and key features. Participants will then engage in hands-on exercises to work with basic data types such as vectors, matrices, and data frames.
+
+The afternoon session will focus on the fundamentals of working with data in R, including managing file paths, working directories, and importing data. Participants will also be introduced to the concept of tidy data and engage in practical exercises on data wrangling using the `dplyr` package. The day concludes with an introduction to the Quarto framework through a group activity.
+
+:::
+
+## Topics Covered Today
+
+- [Data Visualization using R](data_visual.qmd)
+
+- [Introduction to Spatial Epidemiology](intro_spatial.qmd)
+
+- [Spatial Data Manipulation](spatial_data_mani.qmd)
+
+- [Spatial Data Visualisation](spatial_data_visual.qmd)
+
+- [Publication Ready Tables](gtsummary.qmd)
+
+- [Communicating Research with Quarto](quarto.qmd)
+
+
+
+

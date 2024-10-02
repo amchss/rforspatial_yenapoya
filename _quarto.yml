@@ -1,0 +1,24 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "NWDASE 2024"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: day_one.qmd
+        text: Day One 
+      - href: day_two.qmd
+        text: Day Two
+      - href: day_three.qmd
+        text: Day Three
+      - href: about.qmd
+        text: About
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
