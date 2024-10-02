@@ -20,5 +20,6 @@ website:
 format:
   html:
     theme: cosmo
+    code-fold: true
     css: styles.css
     toc: true

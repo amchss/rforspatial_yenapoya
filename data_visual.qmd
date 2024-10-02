@@ -44,7 +44,7 @@ For illustration of concepts, we will be using `birthwt` data set from `MASS` pa
 For illustrative examples in the sections on data visualization, data analysis, and summary tables, Risk Factors Associated with Low Infant Birth Weight dataset (`birthwt`) dataset has been used. It is an inbuilt dataset from the package `MASS`. To load the dataset, type the following R code
 
 ```{r}
-df <- MASS::birthwt
+df <- readxl::read_excel(here::here("data", "birthwt.xlsx"))
 ```
 
 Since, it has been labelled as `df`, it has been reffered as `df` from here on. The dataset used has 189 rows and 10 columns. The data were collected at Baystate Medical Center, Springfield, Mass during 1986. The variables present in the data includes the following variables/ columns:-
